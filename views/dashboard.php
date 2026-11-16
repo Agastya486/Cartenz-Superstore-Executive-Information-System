@@ -85,20 +85,14 @@ if (!isset($user) || !is_array($user)) {
                 <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2 px-3">Menus</p>
                 <nav class="space-y-1">
                     <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium bg-sky-500/10 text-sky-400 border border-sky-500/20 transition">
-                        <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Summary
-                    </button>
-                    <button onclick="switchTab('drilldown')" id="nav-drilldown" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800/80 hover:text-slate-200 transition">
-                        <i data-lucide="network" class="w-4 h-4"></i> Drill-Down
-                    </button>
-                    <button onclick="switchTab('whatif')" id="nav-whatif" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800/80 hover:text-slate-200 transition">
-                        <i data-lucide="sliders-horizontal" class="w-4 h-4"></i> What-If Simulator
+                        <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
                     </button>
                     <button onclick="switchTab('alerts')" id="nav-alerts" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800/80 hover:text-slate-200 transition">
                         <i data-lucide="shield-alert" class="w-4 h-4"></i> Risk & Alerts
                         <span id="navAlertBadge" class="ml-auto bg-rose-500/20 text-rose-400 text-[10px] px-1.5 py-0.5 rounded-full font-bold">—</span>
                     </button>
                     <button onclick="switchTab('etl')" id="nav-etl" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800/80 hover:text-slate-200 transition">
-                        <i data-lucide="database" class="w-4 h-4"></i> Add Transaction
+                        <i data-lucide="database" class="w-4 h-4"></i> ETL
                     </button>
                 </nav>
             </div>
@@ -187,7 +181,7 @@ if (!isset($user) || !is_array($user)) {
             </section>
 
             <!-- TAB 1: EXECUTIVE VIEW DASHBOARD -->
-            <div id="tab-dashboard" class="space-y-6">
+            <div id="tab-dashboard" class="hidden space-y-6">
 
                 <!-- Regional & Category Overview Grid -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -227,6 +221,105 @@ if (!isset($user) || !is_array($user)) {
                         <canvas id="subCatBarChart"></canvas>
                     </div>
                 </div>
+                                <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-6">
+                    <div class="max-w-3xl">
+                        <h2 class="text-xl font-bold text-white mt-2">What-If Analysis</h2>
+                        <p class="text-xs text-slate-300 mt-1">Simulate corporate profit recovery by sliding the maximum discount slider.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                        <!-- Slider Controls -->
+                        <div class="md:col-span-2 bg-slate-900/80 border border-slate-800 p-5 rounded-xl space-y-5">
+                            <div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <label class="text-xs font-semibold text-slate-200">Maximum Discount Cap (%):</label>
+                                    <span id="sliderCapVal" class="text-sm font-extrabold text-sky-400 bg-sky-500/10 px-3 py-1 rounded-lg border border-sky-500/20">20% Cap</span>
+                                </div>
+                                <input type="range" id="discountCapSlider" min="0" max="40" step="5" value="20" oninput="runWhatIfSimulation()" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-sky-500">
+                                <div class="flex justify-between text-[10px] text-slate-400 mt-1">
+                                    <span>0%</span>
+                                    <span>10%</span>
+                                    <span>20%</span>
+                                    <span>30%</span>
+                                    <span>40% (Current)</span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Simulation Results Metrics -->
+                        <div class="bg-gradient-to-b from-slate-900 to-sky-950/40 border border-sky-500/30 p-5 rounded-xl flex flex-col justify-between">
+                            <div>
+                                <p class="text-xs text-slate-400 font-medium">Projected Net Profit Increase</p>
+                                <h3 id="whatifProfitGain" class="text-3xl font-extrabold text-emerald-400 mt-1">+$42,150</h3>
+                                <p class="text-[11px] text-emerald-400/80 mt-0.5">Recovered from discount leaks</p>
+                            </div>
+
+                            <div class="space-y-2 py-3 border-y border-slate-800/80 my-3 text-xs">
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">Baseline Profit:</span>
+                                    <span id="whatifBaselineProfit" class="text-slate-200 font-semibold">$0</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">Simulated New Profit:</span>
+                                    <span id="whatifNewProfit" class="text-emerald-400 font-bold">$328,547</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">New Profit Margin:</span>
+                                    <span id="whatifNewMargin" class="text-sky-400 font-bold">14.30%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Simulation Comparison Visual Chart -->
+                <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-5">
+                    <h3 class="font-semibold text-sm text-white mb-3">Actual vs Simulated Sub-Category Profitability Comparison</h3>
+                    <div class="h-72">
+                        <canvas id="whatIfChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Dashboard Analysis & Interpretation -->
+                <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-5">
+                    <h3 class="font-semibold text-base text-white mb-2">Dashboard Analysis &amp; Interpretation</h3>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        This dashboard consolidates sales and profitability data from the data warehouse into a single
+                        executive view. The notes below explain how to read each visualization and how the underlying
+                        ETL pipeline keeps the figures current.
+                    </p>
+
+                    <div class="mt-4">
+                        <p class="text-xs font-semibold text-sky-300 uppercase tracking-wider mb-2">Reading the Charts</p>
+                        <ul class="space-y-1.5 text-xs text-slate-300 leading-relaxed list-disc pl-5">
+                            <li><span class="text-slate-200 font-medium">Regional Performance Matrix</span>: Compares total sales against net profit per region.</li>
+                            <li><span class="text-slate-200 font-medium">Profit by Category</span>: Shows each category's share of total profit, revealing which categories drive or drag overall profitability.</li>
+                            <li><span class="text-slate-200 font-medium">Sub-Category Profitability</span>: ranks sub-categories by profit. Bars below zero represent loss-making products that erode margin.</li>
+                            <li><span class="text-slate-200 font-medium">Actual vs Simulated Comparison</span>: Contrasts current sub-category profit with the What-If scenario, showing the impact of the selected discount cap.</li>
+                        </ul>
+                    </div>
+
+                    <div class="mt-4">
+                        <p class="text-xs font-semibold text-sky-300 uppercase tracking-wider mb-2">Dashboard &amp; ETL Pipeline</p>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            All figures are served from the data warehouse (<span class="font-mono text-slate-200">dw_sales_summary</span>
+                            and <span class="font-mono text-slate-200">dw_kpi</span>), which the ETL process rebuilds from raw
+                            <span class="font-mono text-slate-200">fact_sales</span> transactions. Every create, update, or delete
+                            triggers the ETL automatically, so KPIs and charts always
+                            reflect the latest data. This separation keeps reporting fast, consistent, and independent of
+                            transactional workloads.
+                        </p>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-slate-700/60">
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            <span class="text-slate-200 font-medium">Executive takeaway:</span>
+                            use the dashboard to monitor performance, detect profit leaks early, and evaluate discount-policy
+                            scenarios before applying them.
+                        </p>
+                    </div>
+                </div>
             </div>
 
             <!-- TAB 2: DRILL-DOWN ANALYSIS ENGINE (CORE REQUIREMENT) -->
@@ -240,6 +333,9 @@ if (!isset($user) || !is_array($user)) {
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
+                        <button onclick="switchTab('dashboard')" class="bg-sky-600/20 hover:bg-sky-600/40 text-sky-300 border border-sky-500/30 text-xs px-3 py-1.5 rounded-lg transition flex items-center gap-1">
+                            <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Back to Dashboard
+                        </button>
                         <button id="btnDrillUp" onclick="drillUp()" class="bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs px-3 py-1.5 rounded-lg transition flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed">
                             <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Drill Up (Back)
                         </button>
@@ -319,69 +415,6 @@ if (!isset($user) || !is_array($user)) {
                                 <!-- Populated dynamically -->
                             </tbody>
                         </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB 3: WHAT-IF ANALYSIS SIMULATOR -->
-            <div id="tab-whatif" class="hidden space-y-6">
-                <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-6">
-                    <div class="max-w-3xl">
-                        <h2 class="text-xl font-bold text-white mt-2">What-If Analysis</h2>
-                        <p class="text-xs text-slate-300 mt-1">Simulate corporate profit recovery by sliding the maximum discount slider.</p>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-                        <!-- Slider Controls -->
-                        <div class="md:col-span-2 bg-slate-900/80 border border-slate-800 p-5 rounded-xl space-y-5">
-                            <div>
-                                <div class="flex justify-between items-center mb-2">
-                                    <label class="text-xs font-semibold text-slate-200">Maximum Discount Cap (%):</label>
-                                    <span id="sliderCapVal" class="text-sm font-extrabold text-sky-400 bg-sky-500/10 px-3 py-1 rounded-lg border border-sky-500/20">20% Cap</span>
-                                </div>
-                                <input type="range" id="discountCapSlider" min="0" max="40" step="5" value="20" oninput="runWhatIfSimulation()" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-sky-500">
-                                <div class="flex justify-between text-[10px] text-slate-400 mt-1">
-                                    <span>0% (No Discount)</span>
-                                    <span>10%</span>
-                                    <span>20%</span>
-                                    <span>30%</span>
-                                    <span>40% (Current Baseline)</span>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <!-- Simulation Results Metrics -->
-                        <div class="bg-gradient-to-b from-slate-900 to-sky-950/40 border border-sky-500/30 p-5 rounded-xl flex flex-col justify-between">
-                            <div>
-                                <p class="text-xs text-slate-400 font-medium">Projected Net Profit Increase</p>
-                                <h3 id="whatifProfitGain" class="text-3xl font-extrabold text-emerald-400 mt-1">+$42,150</h3>
-                                <p class="text-[11px] text-emerald-400/80 mt-0.5">Recovered from discount leaks</p>
-                            </div>
-
-                            <div class="space-y-2 py-3 border-y border-slate-800/80 my-3 text-xs">
-                                <div class="flex justify-between">
-                                    <span class="text-slate-400">Baseline Profit:</span>
-                                    <span id="whatifBaselineProfit" class="text-slate-200 font-semibold">$0</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-slate-400">Simulated New Profit:</span>
-                                    <span id="whatifNewProfit" class="text-emerald-400 font-bold">$328,547</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-slate-400">New Profit Margin:</span>
-                                    <span id="whatifNewMargin" class="text-sky-400 font-bold">14.30%</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Simulation Comparison Visual Chart -->
-                <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-5">
-                    <h3 class="font-semibold text-sm text-white mb-3">Actual vs Simulated Sub-Category Profitability Comparison</h3>
-                    <div class="h-72">
-                        <canvas id="whatIfChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -629,6 +662,7 @@ if (!isset($user) || !is_array($user)) {
     </div>
 
     <!-- JAVASCRIPT (Urut) -->
+    <script>window.INITIAL_TAB = <?= json_encode($tab ?? 'dashboard') ?>;</script>
     <script src="js/api.js"></script>
     <script src="js/charts.js"></script>
     <script src="js/drilldown.js"></script>

@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['admin_name'] = (string) $user['full_name'];
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 
-            header('Location: index.php');
+            header('Location: welcome.php');
             exit;
         }
 

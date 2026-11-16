@@ -1,5 +1,5 @@
 // --- GLOBAL STATE ---
-let currentTab = 'dashboard';
+let currentTab = window.INITIAL_TAB || 'dashboard';
 let drillState = {
     level: 1, // 1: Region, 2: Category, 3: Sub-Category, 4: Root Cause
     region: null,
@@ -26,6 +26,7 @@ window.onload = async function () {
     try {
         await bootstrapSession();
         await loadDashboardData();
+        switchTab(window.INITIAL_TAB || 'dashboard');
         startLiveSync();
     } catch (error) {
         console.error(error);
@@ -77,19 +78,23 @@ function updateKPIs() {
 function switchTab(tabId) {
     currentTab = tabId;
 
-    ['dashboard', 'drilldown', 'whatif', 'alerts', 'etl'].forEach((tab) => {
+    ['dashboard', 'drilldown', 'alerts', 'etl'].forEach((tab) => {
         const el = document.getElementById(`tab-${tab}`);
+        if (!el) return;
         const nav = document.getElementById(`nav-${tab}`);
-        if (!el || !nav) return;
 
         if (tab === tabId) {
             el.classList.remove('hidden');
-            nav.classList.add('bg-sky-500/10', 'text-sky-400', 'border', 'border-sky-500/20');
-            nav.classList.remove('text-slate-400');
+            if (nav) {
+                nav.classList.add('bg-sky-500/10', 'text-sky-400', 'border', 'border-sky-500/20');
+                nav.classList.remove('text-slate-400');
+            }
         } else {
             el.classList.add('hidden');
-            nav.classList.remove('bg-sky-500/10', 'text-sky-400', 'border', 'border-sky-500/20');
-            nav.classList.add('text-slate-400');
+            if (nav) {
+                nav.classList.remove('bg-sky-500/10', 'text-sky-400', 'border', 'border-sky-500/20');
+                nav.classList.add('text-slate-400');
+            }
         }
     });
 
