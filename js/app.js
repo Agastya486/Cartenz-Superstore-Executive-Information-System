@@ -41,8 +41,6 @@ function renderAllViews() {
         initDashboardCharts();
     } else if (currentTab === 'drilldown') {
         renderDrillDown();
-    } else if (currentTab === 'whatif') {
-        runWhatIfSimulation();
     } else if (currentTab === 'etl' && typeof refreshEtlPanel === 'function') {
         refreshEtlPanel();
     }
@@ -102,7 +100,6 @@ function switchTab(tabId) {
     setTimeout(() => {
         if (tabId === 'dashboard') initDashboardCharts();
         if (tabId === 'drilldown') renderDrillDown();
-        if (tabId === 'whatif') runWhatIfSimulation();
         if (tabId === 'etl' && typeof initEtlWorkspace === 'function') initEtlWorkspace();
     }, 50);
 }

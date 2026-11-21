@@ -2,6 +2,20 @@ function initCharts() {
     initDashboardCharts();
 }
 
+function buildWhatIfSubcategories(recovered) {
+    const labels = Object.keys(totals.subProfit || {})
+        .sort((a, b) => totals.subProfit[a] - totals.subProfit[b])
+        .slice(0, 6);
+    const actual = labels.map(s => totals.subProfit[s]);
+    const lossWeights = actual.map(v => Math.max(0, -v));
+    const weightTotal = lossWeights.reduce((sum, v) => sum + v, 0);
+    const shares = weightTotal > 0
+        ? lossWeights.map(v => v / weightTotal)
+        : actual.map(() => (actual.length ? 1 / actual.length : 0));
+    const simulated = actual.map((v, i) => v + recovered * shares[i]);
+    return { labels, actual, simulated };
+}
+
 function initDashboardCharts() {
     // Regional Chart (sorted by sales desc)
     const regions = Object.keys(superstoreData).sort((a, b) => superstoreData[b].sales - superstoreData[a].sales);
@@ -131,6 +145,10 @@ function initDashboardCharts() {
             }
         }
     });
+
+    if (typeof runWhatIfSimulation === 'function') {
+        runWhatIfSimulation();
+    }
 }
 
 function renderDrillChart(labels, sales, profit) {
@@ -195,15 +213,7 @@ function renderDrillChart(labels, sales, profit) {
 }
 
 function renderWhatIfChart(capVal, recovered) {
-    const actualLabels = Object.keys(totals.subProfit || {})
-        .sort((a, b) => totals.subProfit[a] - totals.subProfit[b])
-        .slice(0, 6);
-    const actual = actualLabels.map(s => totals.subProfit[s]);
-    const lossWeights = actual.map(v => Math.max(0, -v));
-    const weightTotal = lossWeights.reduce((sum, v) => sum + v, 0);
-    const shares = weightTotal > 0
-        ? lossWeights.map(v => v / weightTotal)
-        : actual.map(() => (actual.length ? 1 / actual.length : 0));
+    const { labels: actualLabels, actual, simulated } = buildWhatIfSubcategories(recovered);
     const ctx = document.getElementById('whatIfChart').getContext('2d');
     if (charts.whatif) charts.whatif.destroy();
 
@@ -220,7 +230,7 @@ function renderWhatIfChart(capVal, recovered) {
                 },
                 {
                     label: `Simulated Profit with ${capVal}% Cap ($)`,
-                    data: actual.map((v, i) => v + recovered * shares[i]),
+                    data: simulated,
                     backgroundColor: (ctx) => ctx.raw < 0 ? '#f43f5e' : '#10b981',
                     borderRadius: 4
                 }

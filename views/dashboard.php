@@ -251,22 +251,22 @@ if (!isset($user) || !is_array($user)) {
                         <div class="bg-gradient-to-b from-slate-900 to-sky-950/40 border border-sky-500/30 p-5 rounded-xl flex flex-col justify-between">
                             <div>
                                 <p class="text-xs text-slate-400 font-medium">Projected Net Profit Increase</p>
-                                <h3 id="whatifProfitGain" class="text-3xl font-extrabold text-emerald-400 mt-1">+$42,150</h3>
+                                <h3 id="whatifProfitGain" class="text-3xl font-extrabold text-emerald-400 mt-1">—</h3>
                                 <p class="text-[11px] text-emerald-400/80 mt-0.5">Recovered from discount leaks</p>
                             </div>
 
                             <div class="space-y-2 py-3 border-y border-slate-800/80 my-3 text-xs">
                                 <div class="flex justify-between">
                                     <span class="text-slate-400">Baseline Profit:</span>
-                                    <span id="whatifBaselineProfit" class="text-slate-200 font-semibold">$0</span>
+                                    <span id="whatifBaselineProfit" class="text-slate-200 font-semibold">—</span>
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="text-slate-400">Simulated New Profit:</span>
-                                    <span id="whatifNewProfit" class="text-emerald-400 font-bold">$328,547</span>
+                                    <span id="whatifNewProfit" class="text-emerald-400 font-bold">—</span>
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="text-slate-400">New Profit Margin:</span>
-                                    <span id="whatifNewMargin" class="text-sky-400 font-bold">14.30%</span>
+                                    <span id="whatifNewMargin" class="text-sky-400 font-bold">—</span>
                                 </div>
                             </div>
                         </div>
@@ -290,6 +290,11 @@ if (!isset($user) || !is_array($user)) {
                         ETL pipeline keeps the figures current.
                     </p>
 
+                    <!-- Dynamic interpretation: updates with the What-If slider -->
+                    <div id="whatIfInterpretation" class="mt-4 bg-slate-900/60 border border-sky-500/20 rounded-xl p-4 space-y-2 text-xs text-slate-300">
+                        <p class="text-slate-400">Move the What-If discount slider to generate the scenario interpretation.</p>
+                    </div>
+
                     <div class="mt-4">
                         <p class="text-xs font-semibold text-sky-300 uppercase tracking-wider mb-2">Reading the Charts</p>
                         <ul class="space-y-1.5 text-xs text-slate-300 leading-relaxed list-disc pl-5">
@@ -309,14 +314,6 @@ if (!isset($user) || !is_array($user)) {
                             triggers the ETL automatically, so KPIs and charts always
                             reflect the latest data. This separation keeps reporting fast, consistent, and independent of
                             transactional workloads.
-                        </p>
-                    </div>
-
-                    <div class="mt-4 pt-3 border-t border-slate-700/60">
-                        <p class="text-xs text-slate-300 leading-relaxed">
-                            <span class="text-slate-200 font-medium">Executive takeaway:</span>
-                            use the dashboard to monitor performance, detect profit leaks early, and evaluate discount-policy
-                            scenarios before applying them.
                         </p>
                     </div>
                 </div>
